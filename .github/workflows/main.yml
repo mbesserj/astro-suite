@@ -40,7 +40,6 @@ jobs:
             --icon "AstroSuite.ico" `
             --java-options "-Xmx4096m" `
             --java-options "--enable-preview" `
-            --win-dir-chooser `
             --verbose
 
       - name: Zip Release
