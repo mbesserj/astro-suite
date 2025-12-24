@@ -31,6 +31,11 @@ jobs:
         run: |
           echo "Listando archivos en: $(Get-Location)"
           Get-ChildItem
+
+      - name: 🔍 DEBUG - Listar archivos en la raiz
+        run: |
+          echo "Listando archivos en: $(Get-Location)"
+          Get-ChildItem
           
       - name: Create Windows App (Portable)
         run: |
