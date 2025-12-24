@@ -1,0 +1,62 @@
+name: Build Windows Installer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'liberica'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Build with Maven
+        run: mvn clean install -DskipTests
+
+      - name: Prepare Staging
+        run: |
+          New-Item -ItemType Directory -Force -Path target/staging
+          Copy-Item target/astro-suite-4.0-MODULAR.jar -Destination target/staging/
+          mvn dependency:copy-dependencies -DoutputDirectory=target/staging
+
+      - name: 🔍 DEBUG - Listar archivos en la raiz
+        run: |
+          echo "Listando archivos en: $(Get-Location)"
+          Get-ChildItem
+
+      - name: 🔍 DEBUG - Listar archivos en la raiz
+        run: |
+          echo "Listando archivos en: $(Get-Location)"
+          Get-ChildItem
+          
+      - name: Create Windows App (Portable)
+        run: |
+          jpackage `
+            --type app-image `
+            --dest target/dist `
+            --name "AstroSuite" `
+            --app-version "4.0" `
+            --input target/staging `
+            --main-jar "astro-suite-4.0-MODULAR.jar" `
+            --main-class "com.astro.main.AppLauncher" `
+            --icon "AstroSuite.ico" `
+            --java-options "-Xmx4096m" `
+            --java-options "--enable-preview" `
+            --verbose
+
+      - name: Zip Release
+        run: Compress-Archive -Path target/dist/AstroSuite -DestinationPath target/AstroSuite-Windows.zip
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AstroSuite-Windows-Portable
+          path: target/AstroSuite-Windows.zip
