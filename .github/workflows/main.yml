@@ -27,6 +27,11 @@ jobs:
           Copy-Item target/astro-suite-4.0-MODULAR.jar -Destination target/staging/
           mvn dependency:copy-dependencies -DoutputDirectory=target/staging
 
+      - name: 🔍 DEBUG - Listar archivos en la raiz
+        run: |
+          echo "Listando archivos en: $(Get-Location)"
+          Get-ChildItem
+          
       - name: Create Windows App (Portable)
         run: |
           jpackage `
